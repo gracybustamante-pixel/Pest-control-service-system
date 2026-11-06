@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f5f9">
+  <title>Pest Control Service Schedule and Client Log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5f9;
+      --white: #fff;
+      --ink: #202a23;
+      --muted: #788079;
+      --line: #ebe6f0;
+      --violet: #76599a;
+      --violet-dark: #593d7c;
+      --lavender: #eee8f5;
+      --orange: #d67b45;
+      --orange-pale: #fbefe5;
+      --yellow-pale: #f7f1d9;
+      --shadow: 0 12px 32px rgba(55, 38, 70, .08);
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Manrope', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: none; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
+    body.authenticated .app { display: grid; }
+    .login-screen { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr); background: #fff; }
+    body.authenticated .login-screen { display: none; }
+    .login-scene { min-height: 100vh; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 36px clamp(28px, 5vw, 76px); overflow: hidden; color: white; background: #4a365f; }
+    .login-scene:before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(39,27,52,.52), rgba(56,39,74,.08) 42%, rgba(39,27,52,.82)), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=85') center / cover; }
+    .login-scene:after { content: ''; position: absolute; inset: 18px; border: 1px solid rgba(255,255,255,.22); pointer-events: none; }
+    .login-scene > * { position: relative; z-index: 1; }
+    .login-brand { display: flex; align-items: center; gap: 11px; font: 800 15px var(--display); }
+    .login-brand .brand-mark { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); }
+    .login-caption { max-width: 490px; padding: 0 0 15px 18px; border-left: 3px solid #d9c6eb; animation: rise .55s .1s ease both; }
+    .login-caption span { color: #e7d9f3; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .login-caption h1 { max-width: 440px; margin-top: 12px; font: 700 42px/1.12 var(--display); }
+    .login-caption p { max-width: 370px; margin: 12px 0 0; color: #f2f1eb; font-size: 13px; line-height: 1.6; }
+    .login-side { position: relative; display: grid; place-items: center; padding: 42px; overflow: hidden; background-color: #f5f1f8; background-image: linear-gradient(rgba(118,89,154,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(118,89,154,.055) 1px, transparent 1px); background-size: 28px 28px; }
+    .login-form-wrap { width: min(100%, 410px); padding: 34px; border: 1px solid #e9e3ef; border-top: 3px solid var(--violet); border-radius: 8px; background: #fff; box-shadow: 0 22px 55px rgba(55,38,70,.1); animation: rise .55s .06s ease both; }
+    .login-form-wrap .brand-mark { width: 46px; height: 46px; margin-bottom: 24px; border-radius: 13px; background: var(--violet); box-shadow: 0 5px 12px rgba(118,89,154,.22); }
+    .login-form-wrap .brand-mark svg { width: 24px; height: 24px; }
+    .login-eyebrow { margin: 0 0 8px; color: #82718f; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .login-form-wrap h2 { margin: 0; font: 800 27px var(--display); letter-spacing: 0; }
+    .login-intro { margin: 7px 0 25px; color: var(--muted); font-size: 12px; }
+    .login-form { display: grid; gap: 17px; }
+    .login-field { display: grid; gap: 7px; }
+    .login-field label { color: #58645b; font-size: 11px; font-weight: 700; }
+    .login-field input { width: 100%; height: 46px; border: 1px solid #dfe5df; border-radius: 6px; padding: 0 12px; background: #fcfdfb; color: var(--ink); outline: 0; transition: border-color .18s, box-shadow .18s, background .18s; }
+    .login-field input:focus { background: white; }
+    .login-field input:focus { border-color: #a48abd; box-shadow: 0 0 0 3px rgba(118,89,154,.14); }
+    .login-password { position: relative; }
+    .login-password input { padding-right: 54px; }
+    .password-toggle { position: absolute; top: 0; right: 5px; height: 44px; padding: 0 8px; border: 0; background: transparent; color: #667168; font-size: 10px; font-weight: 700; }
+    .login-submit { width: 100%; min-height: 46px; margin-top: 4px; border: 0; border-radius: 6px; background: var(--violet); color: white; font-size: 12px; font-weight: 700; box-shadow: 0 5px 12px rgba(118,89,154,.2); transition: background .18s, transform .18s, box-shadow .18s; }
+    .login-submit:hover { background: var(--violet-dark); transform: translateY(-1px); }
+    .login-submit:focus-visible, .password-toggle:focus-visible { outline: 3px solid rgba(81,111,87,.3); outline-offset: 3px; }
+    .login-foot { margin: 20px 0 0; padding: 10px 12px; border-left: 2px solid var(--violet); background: #f7f3fa; color: #74707a; font-size: 9px; line-height: 1.55; }
+    .sidebar { background: #fff; border-right: 1px solid var(--line); padding: 27px 18px 20px; display: flex; flex-direction: column; }
+    .brand { display: flex; gap: 11px; align-items: center; padding: 0 9px; margin-bottom: 42px; }
+    .brand-mark { width: 39px; height: 39px; border-radius: 12px; background: var(--violet); color: white; display: grid; place-items: center; }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-name { font: 800 15px var(--display); letter-spacing: 0; }
+    .brand-sub { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .nav-label { padding: 0 11px; color: #9a a19a; color: #9aa19a; text-transform: uppercase; letter-spacing: .08em; font-size: 10px; font-weight: 700; margin: 0 0 10px; }
+    .nav { display: grid; gap: 5px; }
+    .nav button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 8px; padding: 11px 12px; color: #69746c; font-weight: 600; transition: background .18s, color .18s; }
+    .nav button:hover { background: #f8f5fb; color: var(--violet); }
+    .nav button.active { background: var(--lavender); color: var(--violet-dark); }
+    .nav svg { width: 18px; height: 18px; stroke-width: 1.8; flex: none; }
+    .sidebar-bottom { margin-top: auto; }
+    .season-note { padding: 16px; border-radius: 9px; color: white; background: var(--violet-dark); position: relative; overflow: hidden; }
+    .season-note:after { content: ''; position: absolute; width: 100px; height: 100px; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; right: -28px; bottom: -48px; box-shadow: 0 0 0 12px rgba(255,255,255,.04), 0 0 0 25px rgba(255,255,255,.04); }
+    .season-note small { display: block; color: #dfd2eb; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .season-note strong { font: 700 15px var(--display); }
+    .season-note p { color: #ece5f2; font-size: 11px; line-height: 1.55; margin: 7px 0 0; max-width: 170px; }
+    .account { display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--line); padding: 16px 7px 0; margin-top: 19px; }
+    .account-logout { margin-left: auto; width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 6px; background: white; color: #657168; }
+    .account-logout svg { width: 15px; height: 15px; }
+    .mobile-logout { display: none; }
+    .avatar { width: 34px; height: 34px; display: grid; place-items: center; flex: none; border-radius: 50%; background: #f4dfce; color: #885638; font-weight: 700; }
+    .account strong { display: block; font-size: 12px; }
+    .account span { color: var(--muted); font-size: 11px; }
+    main { min-width: 0; padding: 27px clamp(20px, 4vw, 58px) 48px; max-width: 1600px; width: 100%; margin: 0 auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 30px; }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .today-date { padding-right: 9px; color: #667168; font-size: 12px; }
+    .icon-button { display: grid; place-items: center; width: 37px; height: 37px; border: 1px solid var(--line); background: white; color: #657168; border-radius: 8px; position: relative; }
+    .icon-button svg { width: 17px; height: 17px; }
+    .icon-button .dot { width: 6px; height: 6px; position: absolute; top: 7px; right: 7px; border-radius: 50%; background: var(--orange); border: 1px solid white; }
+    .welcome { display: flex; justify-content: space-between; align-items: flex-end; gap: 22px; margin-bottom: 23px; animation: rise .4s ease both; }
+    h1 { font: 800 clamp(23px, 2.5vw, 31px)/1.2 var(--display); letter-spacing: 0; margin: 0; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .buttons { display: flex; gap: 9px; flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 7px; border: 1px solid transparent; font-size: 12px; font-weight: 700; transition: background .18s, transform .18s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn svg { width: 15px; height: 15px; }
+    .btn-primary { color: white; background: var(--violet); }
+    .btn-primary:hover { background: var(--violet-dark); }
+    .btn-light { border-color: var(--line); color: var(--ink); background: white; }
+    .btn-light:hover { background: #faf8fc; }
+    .hero { height: 164px; overflow: hidden; border-radius: 10px; position: relative; display: flex; align-items: center; padding: 25px 31px; color: white; background: var(--violet-dark); margin-bottom: 21px; animation: rise .48s .04s ease both; }
+    .hero:before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(46,32,62,.96) 0%, rgba(70,49,91,.83) 48%, rgba(70,49,91,.13) 100%), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1400&q=85') center 43% / cover; }
+    .hero-content { position: relative; z-index: 1; max-width: 480px; }
+    .eyebrow { color: #e6d9f1; text-transform: uppercase; font-size: 10px; letter-spacing: .1em; font-weight: 700; }
+    .hero h2 { font: 700 21px/1.3 var(--display); letter-spacing: 0; margin: 8px 0 6px; }
+    .hero p { font-size: 12px; line-height: 1.5; color: #eee8f4; margin: 0; max-width: 370px; }
+    .hero-count { position: absolute; right: 26px; bottom: 19px; z-index: 1; font-size: 11px; color: #f1f5f0; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin-bottom: 25px; animation: rise .48s .08s ease both; }
+    .stat { background: white; border: 1px solid #edf0e9; border-radius: 8px; padding: 15px 17px; min-width: 0; }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .stat-icon { width: 29px; height: 29px; border-radius: 7px; display: grid; place-items: center; color: var(--violet); background: var(--lavender); }
+    .stat-icon.orange { color: #b76838; background: var(--orange-pale); }
+    .stat-icon.yellow { color: #927e29; background: var(--yellow-pale); }
+    .stat-icon svg { width: 15px; height: 15px; }
+    .stat strong { display: block; margin-top: 10px; font: 800 24px var(--display); }
+    .stat-foot { margin-top: 3px; font-size: 10px; color: #929a93; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .85fr); gap: 18px; align-items: start; }
+    .panel { min-width: 0; border: 1px solid #edf0e9; border-radius: 8px; background: white; animation: rise .48s .12s ease both; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+    .panel-title { font: 700 14px var(--display); margin: 0; }
+    .panel-subtitle { display: block; color: var(--muted); font: 400 11px var(--sans); margin-top: 4px; }
+    .text-button { padding: 5px 0 5px 8px; border: 0; background: none; color: var(--violet); font-size: 11px; font-weight: 700; }
+    .text-button:hover { color: var(--orange); }
+    .schedule-list { padding: 3px 18px 8px; }
+    .visit { display: grid; grid-template-columns: 51px 1fr auto; gap: 13px; align-items: center; padding: 14px 0; border-bottom: 1px solid #f0f2ed; }
+    .visit:last-child { border-bottom: 0; }
+    .visit-time { text-align: center; border-right: 1px solid var(--line); padding-right: 12px; }
+    .visit-time strong { display: block; font: 700 12px var(--display); }
+    .visit-time span { color: var(--muted); font-size: 10px; }
+    .visit-name { font-size: 12px; font-weight: 700; }
+    .visit-meta { color: var(--muted); font-size: 10px; margin-top: 4px; }
+    .visit-address { display: inline-block; color: #929a93; margin-left: 5px; }
+    .tag { display: inline-flex; align-items: center; white-space: nowrap; border-radius: 5px; padding: 5px 7px; font-size: 9px; font-weight: 700; background: var(--lavender); color: var(--violet-dark); }
+    .tag.pending { background: var(--yellow-pale); color: #8b7823; }
+    .tag.completed { background: #edf0ee; color: #68716b; }
+    .empty { text-align: center; padding: 31px 15px; color: var(--muted); font-size: 12px; }
+    .quick-panel { padding-bottom: 13px; }
+    .quick-list { padding: 5px 18px 0; }
+    .quick-item { display: flex; align-items: center; gap: 11px; padding: 12px 0; border-bottom: 1px solid #f0f2ed; }
+    .quick-item:last-child { border: 0; }
+    .quick-mark { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--orange-pale); color: #ae663c; }
+    .quick-mark svg { width: 16px; height: 16px; }
+    .quick-item:nth-child(2) .quick-mark { background: var(--lavender); color: var(--violet); }
+    .quick-item:nth-child(3) .quick-mark { background: var(--yellow-pale); color: #927e29; }
+    .quick-item strong { display: block; font-size: 11px; }
+    .quick-item span { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+    .view-tools { display: flex; gap: 9px; align-items: center; }
+    .searchbox { position: relative; }
+    .searchbox svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; color: #8b958d; }
+    .searchbox input { width: 200px; height: 35px; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 0 10px 0 32px; outline: 0; font-size: 11px; }
+    .searchbox input:focus, .field input:focus, .field select:focus, .field textarea:focus { border-color: #aa92c5; box-shadow: 0 0 0 3px rgba(118,89,154,.12); }
+    .filter-select { height: 35px; border: 1px solid var(--line); background: white; color: #657168; border-radius: 6px; padding: 0 9px; font-size: 11px; outline: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th { padding: 11px 17px; color: #8b958d; font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: #fbfcfa; }
+    td { padding: 14px 17px; border-top: 1px solid #f0f2ed; font-size: 11px; color: #566158; }
+    td:first-child { color: var(--ink); font-weight: 700; }
+    .client-cell { display: flex; align-items: center; gap: 9px; }
+    .client-avatar { width: 29px; height: 29px; border-radius: 50%; display: grid; place-items: center; background: #efe8f4; color: var(--violet-dark); font-size: 10px; font-weight: 700; }
+    tr:hover td { background: #fcfdfb; }
+    .client-view { display: none; }
+    .schedule-view { display: none; }
+    .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
+    .schedule-toolbar strong { font: 700 13px var(--display); }
+    .modal-backdrop { position: fixed; inset: 0; display: none; place-items: center; padding: 18px; background: rgba(22,35,26,.45); z-index: 10; }
+    .modal-backdrop.open { display: grid; animation: fade .15s ease both; }
+    .modal { width: min(100%, 460px); max-height: min(92vh, 720px); overflow: auto; padding: 23px; border-radius: 10px; background: white; box-shadow: 0 24px 75px rgba(18,33,23,.2); animation: rise .2s ease both; }
+    .modal-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .modal-heading h2 { font: 800 19px var(--display); margin: 0; }
+    .modal-heading p { color: var(--muted); font-size: 11px; margin: 5px 0 0; }
+    .close-button { border: 0; background: #f6f2fa; color: #657168; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 6px; }
+    .close-button svg { width: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1/-1; }
+    .field label { font-size: 10px; font-weight: 700; color: #58645b; }
+    .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: white; padding: 10px; outline: 0; font-size: 11px; color: var(--ink); }
+    .field textarea { min-height: 68px; resize: vertical; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+    .toast { position: fixed; bottom: 22px; right: 22px; z-index: 20; padding: 12px 16px; border-radius: 7px; background: var(--violet-dark); color: white; box-shadow: var(--shadow); font-size: 12px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: .2s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @media (max-width: 1000px) { .app { grid-template-columns: 210px minmax(0,1fr); } main { padding-left: 25px; padding-right: 25px; } .content-grid { grid-template-columns: minmax(0, 1.25fr) minmax(235px, .85fr); } .stat { padding: 13px; } }
+    @media (max-width: 760px) { .app { display: block; } body.authenticated .app { display: block; } .login-screen { grid-template-columns: 1fr; } .login-scene { min-height: 225px; padding: 23px 24px; } .login-scene:after { inset: 10px; } .login-caption { padding: 0 0 0 12px; } .login-caption h1 { font-size: 26px; } .login-caption p { display: none; } .login-side { padding: 28px 18px 34px; background-size: 22px 22px; } .login-form-wrap { padding: 26px 23px; } .login-form-wrap .brand-mark { margin-bottom: 17px; } .login-form-wrap h2 { font-size: 24px; } .sidebar { padding: 12px 16px; border-right: 0; border-bottom: 1px solid var(--line); } .brand { margin: 0 0 12px; padding: 0; } .season-note, .account, .nav-label { display: none; } .nav { display: flex; overflow-x: auto; gap: 5px; } .nav button { width: auto; flex: none; padding: 9px 11px; font-size: 11px; } .nav svg { width: 15px; } main { padding: 19px 16px 35px; } .topbar { margin-bottom: 24px; } .mobile-logout { display: grid; } .welcome { align-items: flex-start; flex-direction: column; gap: 14px; } .buttons { width: 100%; } .buttons .btn { flex: 1; } .hero { height: 157px; padding: 20px; } .hero-count { right: 15px; bottom: 12px; } .stats { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; margin-bottom: 17px; } .content-grid { grid-template-columns: 1fr; gap: 13px; } .schedule-view .panel-header { align-items: flex-start; flex-direction: column; } .view-tools { width: 100%; } .searchbox { flex: 1; } .searchbox input { width: 100%; } }
+    @media (max-width: 420px) { .today-date { display: none; } .hero h2 { font-size: 18px; } .hero p { max-width: 250px; font-size: 11px; } .hero:before { background-position: 60% center; } .visit { grid-template-columns: 45px minmax(0,1fr) auto; gap: 9px; } .visit-address { display: block; margin: 3px 0 0; } .tag { padding: 5px; font-size: 8px; } .panel-header { padding: 15px; } .schedule-list, .quick-list { padding-left: 14px; padding-right: 14px; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } }
+    @media (max-width: 760px) { .app { display: none; } body.authenticated .app { display: block; } }
+  </style>
+</head>
+<body>
+  <section class="login-screen" aria-label="Sign in to Fieldwise">
+    <div class="login-scene">
+      <div class="login-brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z"/><path d="M8.5 12.5 11 15l5-6"/></svg></div><span>Fieldwise</span></div>
+      <div class="login-caption"><span>Field operations</span><h1>Start the day with every detail in place.</h1><p>Service routes and client records, ready when your team is.</p></div>
+    </div>
+    <div class="login-side">
+      <div class="login-form-wrap">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z"/><path d="M8.5 12.5 11 15l5-6"/></svg></div>
+        <p class="login-eyebrow">Fieldwise workspace</p><h2>Welcome back</h2><p class="login-intro">Sign in to your Fieldwise workspace.</p>
+        <form class="login-form" id="login-form">
+          <div class="login-field"><label for="login-email">Email address</label><input id="login-email" name="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
+          <div class="login-field"><label for="login-password">Password</label><div class="login-password"><input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password"><button class="password-toggle" id="password-toggle" type="button" aria-label="Show password">Show</button></div></div>
+          <button class="login-submit" type="submit">Sign in</button>
+        </form>
+        <p class="login-foot">Demo access only: credentials are not verified, and this screen does not secure stored data.</p>
+      </div>
+    </div>
+  </section>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z"/><path d="M8.5 12.5 11 15l5-6"/></svg></div>
+        <div class="brand-name">Fieldwise<span class="brand-sub">Pest management</span></div>
+      </div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>Overview</button>
+        <button data-view="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h6"/></svg>Service schedule</button>
+        <button data-view="clients"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Client log</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="season-note"><small>Seasonal watch</small><strong>Warm weather is here</strong><p>Termite and mosquito calls tend to rise this time of year.</p></div>
+        <div class="account"><div class="avatar">GB</div><div><strong>Gracy Bustamante</strong><span>Office manager</span></div><button class="account-logout" id="logout-button" type="button" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg></button></div>
+      </div>
+    </aside>
+    <main>
+      <div class="topbar">
+        <div class="crumb" id="breadcrumb">Workspace / Overview</div>
+        <div class="top-actions"><span class="today-date" id="today-date"></span><button class="icon-button" aria-label="Notifications" title="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button><button class="icon-button mobile-logout" id="mobile-logout-button" type="button" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg></button></div>
+      </div>
+      <section class="overview-view" id="overview-view">
+        <div class="welcome"><div><h1>Pest Control Service Schedule<br>and Client Log</h1><p class="subtitle">A clear view of your routes, visits, and customers.</p></div><div class="buttons"><button class="btn btn-light" data-open="client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM19 8v6M22 11h-6"/></svg>Add client</button><button class="btn btn-primary" data-open="visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Schedule visit</button></div></div>
+        <div class="hero"><div class="hero-content"><span class="eyebrow">Keep every route in good shape</span><h2>Good service starts with a plan.</h2><p>Stay ahead of the next visit and keep every client detail in one place.</p></div><span class="hero-count" id="hero-count"></span></div>
+        <div class="stats">
+          <div class="stat"><div class="stat-top"><span>Total clients</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM20 8v6M23 11h-6"/></svg></span></div><strong id="stat-clients">0</strong><div class="stat-foot">Active customer records</div></div>
+          <div class="stat"><div class="stat-top"><span>Today's visits</span><span class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span></div><strong id="stat-today">0</strong><div class="stat-foot">On the service schedule</div></div>
+          <div class="stat"><div class="stat-top"><span>Upcoming visits</span><span class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div><strong id="stat-upcoming">0</strong><div class="stat-foot">Next 7 days</div></div>
+          <div class="stat"><div class="stat-top"><span>Need confirmation</span><span class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.5 17.4A1.8 1.8 0 0 0 4 20h16a1.8 1.8 0 0 0 1.5-2.6L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></span></div><strong id="stat-pending">0</strong><div class="stat-foot">Visits marked pending</div></div>
+        </div>
+        <div class="content-grid">
+          <section class="panel"><div class="panel-header"><div><h2 class="panel-title">Today's route</h2><span class="panel-subtitle" id="route-date"></span></div><button class="text-button" data-goto="schedule">Full schedule &rarr;</button></div><div class="schedule-list" id="today-list"></div></section>
+          <section class="panel quick-panel"><div class="panel-header"><div><h2 class="panel-title">Quick overview</h2><span class="panel-subtitle">Your service at a glance</span></div></div><div class="quick-list" id="quick-list"></div></section>
+        </div>
+      </section>
+      <section class="schedule-view" id="schedule-view">
+        <div class="welcome"><div><h1>Service schedule</h1><p class="subtitle">Plan, track, and update your service visits.</p></div><button class="btn btn-primary" data-open="visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Schedule visit</button></div>
+        <section class="panel"><div class="panel-header"><div><h2 class="panel-title">All visits</h2><span class="panel-subtitle" id="visit-count"></span></div><div class="view-tools"><label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="visit-search" type="search" placeholder="Search visits" aria-label="Search visits"></label><select class="filter-select" id="visit-filter" aria-label="Filter visits"><option value="all">All visits</option><option value="Scheduled">Scheduled</option><option value="Pending">Pending</option><option value="Completed">Completed</option></select></div></div><div class="schedule-toolbar"><strong id="schedule-date-label"></strong><button class="text-button" id="sort-visits">Sort by date &#8597;</button></div><div class="schedule-list" id="all-visits"></div></section>
+      </section>
+      <section class="client-view" id="client-view">
+        <div class="welcome"><div><h1>Client log</h1><p class="subtitle">Keep contact details and service history close at hand.</p></div><button class="btn btn-primary" data-open="client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add client</button></div>
+        <section class="panel"><div class="panel-header"><div><h2 class="panel-title">Client directory</h2><span class="panel-subtitle" id="client-count"></span></div><div class="view-tools"><label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="client-search" type="search" placeholder="Search clients" aria-label="Search clients"></label></div></div><div class="table-wrap"><table><thead><tr><th>Client</th><th>Contact</th><th>Address</th><th>Last service</th><th>Next visit</th></tr></thead><tbody id="client-table"></tbody></table></div></section>
+      </section>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="modal-backdrop" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-heading"><div><h2 id="modal-title"></h2><p id="modal-description"></p></div><button class="close-button" id="close-modal" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div><form id="entry-form"><div class="form-grid" id="form-fields"></div><div class="form-actions"><button type="button" class="btn btn-light" id="cancel-modal">Cancel</button><button type="submit" class="btn btn-primary" id="submit-entry">Save</button></div></form></section></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const STORAGE_KEY = 'fieldwise-dashboard-v1';
+    const AUTH_SESSION_KEY = 'fieldwise-demo-session';
+    if (sessionStorage.getItem(AUTH_SESSION_KEY) === 'active') document.body.classList.add('authenticated');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const plusDays = (count) => { const date = new Date(today); date.setDate(date.getDate() + count); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; };
+    const starterData = {
+      clients: [
+        { id: 'c1', name: 'Olivia Bennett', phone: '(555) 014-2238', email: 'olivia.bennett@example.com', address: '1842 Cedar Lane', service: 'Quarterly pest prevention', lastService: plusDays(-82) },
+        { id: 'c2', name: 'Marcus Chen', phone: '(555) 018-9071', email: 'marcus.chen@example.com', address: '57 Willow Creek Rd', service: 'Termite inspection', lastService: plusDays(-177) },
+        { id: 'c3', name: 'Sophia Ramirez', phone: '(555) 012-4850', email: 'sophia.ramirez@example.com', address: '903 Meadowview Dr', service: 'Mosquito treatment', lastService: plusDays(-28) },
+        { id: 'c4', name: 'Ethan Brooks', phone: '(555) 016-3324', email: 'ethan.brooks@example.com', address: '221 Pine Street', service: 'Rodent exclusion', lastService: plusDays(-35) }
+      ],
+      visits: [
+        { id: 'v1', clientId: 'c1', date: plusDays(0), time: '09:00', type: 'Quarterly pest prevention', status: 'Scheduled', notes: '' },
+        { id: 'v2', clientId: 'c2', date: plusDays(0), time: '11:30', type: 'Termite inspection', status: 'Pending', notes: 'Please confirm access to the crawl space.' },
+        { id: 'v3', clientId: 'c3', date: plusDays(0), time: '14:00', type: 'Mosquito treatment', status: 'Scheduled', notes: '' },
+        { id: 'v4', clientId: 'c4', date: plusDays(1), time: '10:00', type: 'Rodent exclusion follow-up', status: 'Scheduled', notes: '' },
+        { id: 'v5', clientId: 'c1', date: plusDays(4), time: '13:30', type: 'Exterior perimeter spray', status: 'Pending', notes: '' },
+        { id: 'v6', clientId: 'c2', date: plusDays(6), time: '09:30', type: 'Termite inspection', status: 'Scheduled', notes: '' }
+      ]
+    };
+    let data;
+    try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || starterData; } catch { data = starterData; }
+    data.clients ||= [];
+    data.visits ||= [];
+    const seedFirstNames = ['Ava', 'Noah', 'Mia', 'Liam', 'Zoe', 'Eli', 'Nina', 'Leo', 'Ivy', 'Owen'];
+    const seedLastNames = ['Carter', 'Patel', 'Morgan', 'Foster', 'Reed', 'Kim', 'Price', 'Ward', 'Diaz', 'Bell'];
+    const seedServices = ['Quarterly pest prevention', 'Termite inspection', 'Mosquito treatment', 'Rodent exclusion', 'Ant treatment', 'Exterior perimeter spray'];
+    let addedSeedData = false;
+    while (data.clients.length < 100) {
+      const index = data.clients.length;
+      const name = `${seedFirstNames[index % seedFirstNames.length]} ${seedLastNames[Math.floor(index / seedFirstNames.length) % seedLastNames.length]}`;
+      const emailName = name.toLowerCase().replace(/\s+/g, '.');
+      data.clients.push({
+        id: `seed-client-${index + 1}`,
+        name,
+        phone: `(555) ${String(100 + index).slice(-3)}-${String(1000 + index).slice(-4)}`,
+        email: `${emailName}${index}@example.com`,
+        address: `${120 + index} ${['Maple', 'Oak', 'Cedar', 'Willow', 'Pine'][index % 5]} Street`,
+        service: seedServices[index % seedServices.length],
+        lastService: plusDays(-((index % 60) + 10))
+      });
+      addedSeedData = true;
+    }
+    while (data.visits.length < 100) {
+      const index = data.visits.length;
+      const dayOffset = (index % 41) - 12;
+      data.visits.push({
+        id: `seed-visit-${index + 1}`,
+        clientId: data.clients[index % data.clients.length].id,
+        date: plusDays(dayOffset),
+        time: `${String(8 + (index % 9)).padStart(2, '0')}:${index % 2 ? '30' : '00'}`,
+        type: seedServices[index % seedServices.length],
+        status: dayOffset < 0 ? 'Completed' : index % 5 === 0 ? 'Pending' : 'Scheduled',
+        notes: ''
+      });
+      addedSeedData = true;
+    }
+    if (addedSeedData) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    let currentView = 'overview';
+    let sortAscending = true;
+    let activeModal = null;
+    const byId = (id) => document.getElementById(id);
+    byId('login-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      sessionStorage.setItem(AUTH_SESSION_KEY, 'active');
+      document.body.classList.add('authenticated');
+    });
+    byId('password-toggle').addEventListener('click', (event) => {
+      const password = byId('login-password');
+      const isVisible = password.type === 'text';
+      password.type = isVisible ? 'password' : 'text';
+      event.currentTarget.textContent = isVisible ? 'Show' : 'Hide';
+      event.currentTarget.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+    });
+    const signOut = () => {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+      document.body.classList.remove('authenticated');
+      byId('login-form').reset();
+    };
+    byId('logout-button').addEventListener('click', signOut);
+    byId('mobile-logout-button').addEventListener('click', signOut);
+    const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const getClient = (id) => data.clients.find((client) => client.id === id);
+    const formatDate = (value, options = { month: 'short', day: 'numeric' }) => new Date(`${value}T12:00:00`).toLocaleDateString(undefined, options);
+    const formatTime = (value) => { const [hours, minutes] = value.split(':').map(Number); return `${(hours % 12 || 12)}:${String(minutes).padStart(2, '0')} ${hours >= 12 ? 'PM' : 'AM'}`; };
+    const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    const initials = (name) => name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
+    const upcoming = () => data.visits.filter((visit) => visit.date >= plusDays(0) && visit.date <= plusDays(7));
+    const statusTag = (status) => `<span class="tag ${status.toLowerCase()}">${escapeHtml(status)}</span>`;
+    function renderVisit(visit) {
+      const client = getClient(visit.clientId);
+      return `<div class="visit"><div class="visit-time"><strong>${formatTime(visit.time)}</strong><span>${formatDate(visit.date)}</span></div><div><div class="visit-name">${escapeHtml(client?.name || 'Client removed')}</div><div class="visit-meta">${escapeHtml(visit.type)}<span class="visit-address">${escapeHtml(client?.address || '')}</span></div></div>${statusTag(visit.status)}</div>`;
+    }
+    function render() {
+      const todayVisits = data.visits.filter((visit) => visit.date === plusDays(0)).sort((a, b) => a.time.localeCompare(b.time));
+      const nextVisits = upcoming();
+      byId('stat-clients').textContent = data.clients.length;
+      byId('stat-today').textContent = todayVisits.length;
+      byId('stat-upcoming').textContent = nextVisits.length;
+      byId('stat-pending').textContent = data.visits.filter((visit) => visit.status === 'Pending' && visit.date >= plusDays(0)).length;
+      byId('hero-count').textContent = `${nextVisits.length} visit${nextVisits.length === 1 ? '' : 's'} in the next 7 days`;
+      byId('route-date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+      byId('schedule-date-label').textContent = 'Service history and upcoming visits';
+      byId('today-list').innerHTML = todayVisits.length ? todayVisits.map(renderVisit).join('') : '<div class="empty">No visits scheduled for today.</div>';
+      const nextPending = data.visits.filter((visit) => visit.status === 'Pending' && visit.date >= plusDays(0)).length;
+      const recentCount = data.visits.filter((visit) => visit.status === 'Completed').length;
+      byId('quick-list').innerHTML = `<div class="quick-item"><div class="quick-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.5 17.4A1.8 1.8 0 0 0 4 20h16a1.8 1.8 0 0 0 1.5-2.6L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></div><div><strong>${nextPending} visit${nextPending === 1 ? '' : 's'} need confirmation</strong><span>Review your pending appointments</span></div></div><div class="quick-item"><div class="quick-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m5 12 4 4L19 6"/></svg></div><div><strong>${recentCount} completed service${recentCount === 1 ? '' : 's'}</strong><span>Recorded in your service history</span></div></div><div class="quick-item"><div class="quick-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>${nextVisits.length} upcoming this week</strong><span>Keep the team on the same page</span></div></div>`;
+      const allVisits = [...data.visits].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time) * (sortAscending ? 1 : -1));
+      const query = byId('visit-search').value.trim().toLowerCase();
+      const filter = byId('visit-filter').value;
+      const filteredVisits = allVisits.filter((visit) => {
+        const client = getClient(visit.clientId);
+        return (filter === 'all' || visit.status === filter) && `${client?.name || ''} ${client?.address || ''} ${visit.type}`.toLowerCase().includes(query);
+      });
+      byId('visit-count').textContent = `${filteredVisits.length} service visit${filteredVisits.length === 1 ? '' : 's'}`;
+      byId('all-visits').innerHTML = filteredVisits.length ? filteredVisits.map(renderVisit).join('') : '<div class="empty">No visits match your search.</div>';
+      const clientQuery = byId('client-search').value.trim().toLowerCase();
+      const visibleClients = data.clients.filter((client) => `${client.name} ${client.phone} ${client.email} ${client.address}`.toLowerCase().includes(clientQuery));
+      byId('client-count').textContent = `${visibleClients.length} client${visibleClients.length === 1 ? '' : 's'} on file`;
+      byId('client-table').innerHTML = visibleClients.length ? visibleClients.map((client) => {
+        const clientVisits = data.visits.filter((visit) => visit.clientId === client.id).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+        const lastVisit = clientVisits.find((visit) => visit.status === 'Completed');
+        const nextVisit = clientVisits.find((visit) => visit.date >= plusDays(0) && visit.status !== 'Completed');
+        return `<tr><td><div class="client-cell"><span class="client-avatar">${escapeHtml(initials(client.name))}</span>${escapeHtml(client.name)}</div></td><td>${escapeHtml(client.phone)}<br><span style="color:#929a93;font-size:10px">${escapeHtml(client.email)}</span></td><td>${escapeHtml(client.address)}</td><td>${lastVisit ? formatDate(lastVisit.date) : (client.lastService ? formatDate(client.lastService) : 'No record')}</td><td>${nextVisit ? formatDate(nextVisit.date) : '<span style="color:#929a93">Not scheduled</span>'}</td></tr>`;
+      }).join('') : '<tr><td colspan="5" class="empty">No clients match your search.</td></tr>';
+    }
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.nav button').forEach((button) => button.classList.toggle('active', button.dataset.view === view));
+      byId('overview-view').style.display = view === 'overview' ? 'block' : 'none';
+      byId('schedule-view').style.display = view === 'schedule' ? 'block' : 'none';
+      byId('client-view').style.display = view === 'clients' ? 'block' : 'none';
+      byId('breadcrumb').textContent = `Workspace / ${{ overview: 'Overview', schedule: 'Service schedule', clients: 'Client log' }[view]}`;
+    }
+    const clientFields = `<div class="field"><label for="name">Client name *</label><input id="name" name="name" required autocomplete="name" placeholder="Full name"></div><div class="field"><label for="phone">Phone *</label><input id="phone" name="phone" required type="tel" autocomplete="tel" placeholder="(555) 000-0000"></div><div class="field full"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field full"><label for="address">Service address *</label><input id="address" name="address" required autocomplete="street-address" placeholder="Street address"></div><div class="field full"><label for="service">Primary service</label><input id="service" name="service" placeholder="e.g. Quarterly pest prevention"></div>`;
+    function visitFields() {
+      const options = data.clients.map((client) => `<option value="${escapeHtml(client.id)}">${escapeHtml(client.name)}</option>`).join('');
+      return `<div class="field full"><label for="clientId">Client *</label><select id="clientId" name="clientId" required>${options || '<option value="">Add a client first</option>'}</select></div><div class="field"><label for="date">Date *</label><input id="date" name="date" type="date" min="${plusDays(0)}" value="${plusDays(0)}" required></div><div class="field"><label for="time">Time *</label><input id="time" name="time" type="time" value="09:00" required></div><div class="field full"><label for="type">Service type *</label><input id="type" name="type" required placeholder="e.g. Termite inspection"></div><div class="field"><label for="status">Status</label><select id="status" name="status"><option>Scheduled</option><option>Pending</option></select></div><div class="field full"><label for="notes">Visit notes</label><textarea id="notes" name="notes" placeholder="Access details or service notes"></textarea></div>`;
+    }
+    function openModal(type) {
+      activeModal = type;
+      if (type === 'visit' && !data.clients.length) { showToast('Add a client before scheduling a visit.'); openModal('client'); return; }
+      byId('modal-title').textContent = type === 'client' ? 'Add a client' : 'Schedule a visit';
+      byId('modal-description').textContent = type === 'client' ? 'Add contact and service details to your log.' : 'Add a service appointment to your route.';
+      byId('form-fields').innerHTML = type === 'client' ? clientFields : visitFields();
+      byId('submit-entry').textContent = type === 'client' ? 'Save client' : 'Schedule visit';
+      byId('modal-backdrop').classList.add('open');
+      document.querySelector('.modal input, .modal select')?.focus();
+    }
+    function closeModal() { byId('modal-backdrop').classList.remove('open'); activeModal = null; byId('entry-form').reset(); }
+    let toastTimer;
+    function showToast(message) { const toast = byId('toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2600); }
+    document.querySelectorAll('.nav button').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.view)));
+    document.querySelectorAll('[data-goto]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.goto)));
+    document.querySelectorAll('[data-open]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.open)));
+    byId('close-modal').addEventListener('click', closeModal);
+    byId('cancel-modal').addEventListener('click', closeModal);
+    byId('modal-backdrop').addEventListener('click', (event) => { if (event.target === byId('modal-backdrop')) closeModal(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && activeModal) closeModal(); });
+    byId('entry-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(event.currentTarget));
+      if (activeModal === 'client') {
+        const client = { id: crypto.randomUUID(), ...values, lastService: '' };
+        data.clients.push(client);
+        save(); render(); closeModal(); showToast(`${client.name} added to your client log.`);
+      } else {
+        const visit = { id: crypto.randomUUID(), ...values };
+        data.visits.push(visit);
+        save(); render(); closeModal(); showToast('Visit added to your service schedule.');
+      }
+    });
+    byId('client-search').addEventListener('input', render);
+    byId('visit-search').addEventListener('input', render);
+    byId('visit-filter').addEventListener('change', render);
+    byId('sort-visits').addEventListener('click', () => { sortAscending = !sortAscending; render(); });
+    byId('today-date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    render();
+    switchView(currentView);
+  </script>
+</body>
+</html>
